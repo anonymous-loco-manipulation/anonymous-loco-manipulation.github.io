@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="Learn2Push: Learning Non-Prehensile Manipulation Across Object Families with Legged Mobile Manipulators">
+  <meta name="keywords" content="CoINS, interactive navigation, VLM">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CoINS: Counterfactual Interactive Navigation via Skill-Aware VLM</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="icon" href="./static/images/favicon.svg">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+</head>
+<body>
+
+<nav class="navbar" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <a class="navbar-item" href="#">
+      <span class="icon">
+        <i class="fas fa-home"></i>
+      </span>
+    </a>
+    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
+  </div>
+  <div class="navbar-menu">
+    <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
+      <a class="navbar-item is-size-5 has-text-weight-semibold" href="#">
+        CoINS
+      </a>
+    </div>
+  </div>
+</nav>
+
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">Learn2Push: Learning Non-Prehensile Manipulation Across Object Families with Legged Mobile Manipulators</h1>
+          <p class="is-size-5 has-text-grey">Anonymous author</p>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <span class="link-block">
+                <a href="#"
+                   role="button"
+                   aria-disabled="true"
+                   onclick="return false;"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="#"
+                   role="button"
+                   aria-disabled="true"
+                   onclick="return false;"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="#"
+                   role="button"
+                   aria-disabled="true"
+                   onclick="return false;"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-youtube"></i>
+                  </span>
+                  <span>Video</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="#"
+                   role="button"
+                   aria-disabled="true"
+                   onclick="return false;"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                  </a>
+              </span>
+              <span class="link-block">
+                <a href="#"
+                   role="button"
+                   aria-disabled="true"
+                   onclick="return false;"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="far fa-images"></i>
+                  </span>
+                  <span>Data</span>
+                  </a>
+            </div>
+            <p class="is-size-6 has-text-grey">Links will be added after the paper is released.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+
+            Non-prehensile manipulation with mobile manipulators is attractive for real-world deployment because it avoids the fragility of grasping, but it remains challenging due to contact-rich dynamics and the need to coordinate locomotion and arm motion under safety constraints. We study goal-directed object pushing with a quadrupedal manipulator (Spot with an arm) and present a hierarchical constrained reinforcement learning framework that separates task-level decision making from low-level dynamic stabilization. A high-level policy outputs a single compact whole-body command comprising an SE(2) base-velocity target, body attitude targets (roll, pitch, height), and arm joint targets, while a pretrained loco-manipulation controller tracks these commands to produce stable full-body motion. To ensure that reinforcement learning retains control authority at the intended decision locus, we introduce a deterministic command-ownership interface that removes intermediate command resampling commonly used in simulation for exploration, enabling synchronized locomotion--arm control from one action vector. We further employ keypoint-based pose objectives for robust goal alignment and surface-based reach-target sampling to encourage diverse contact interactions during training. We evaluate the approach in IsaacLab/IsaacSim and on Spot hardware, and show that the proposed hierarchy and command interface improve learning stability and task success while satisfying safety constraints. Ablation studies isolate the effects of constrained learning, hierarchical structure, and target sampling on performance.
+
+
+
+
+            </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full">
+        <h2 class="title is-3">Overview</h2>
+        <figure class="image">
+          <img src="./static/images/cover_pic.png" alt="CoINS overview with navigation, skill-aware reasoning, and benchmark illustration">
+        </figure>
+        <p class="content has-text-justified" style="margin-top: 1rem;">
+          We introduce CoINS, a hierarchical interactive navigation framework that integrates skill-aware VLM reasoning with an RL-based skill library for diverse behaviors. Unlike traditional methods that rely on passive avoidance, CoINS enables the robot to actively modify the environment to clear paths in cluttered scenarios.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full">
+        <h2 class="title is-3">Framework</h2>
+        <figure class="image">
+          <img src="./static/images/framework.png" alt="CoINS Framework">
+        </figure>
+        <p class="content has-text-justified" style="margin-top: 1rem;">
+          The CoINS framework. The VLM reasoning module takes the robot's egocentric RGB observations and embodiment constraints as input to produce high-level interaction and navigation decisions, which are then translated by the skill execution module into precise motion controls for diverse interaction primitives.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full">
+        <h2 class="title is-3">Video</h2>
+        <div class="columns is-centered">
+          <div class="column">
+            <h3 class="title is-4">Simulation</h3>
+            <video controls playsinline width="100%">
+              <source src="./static/videos/simulation.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div class="column">
+            <h3 class="title is-4">Real-world Experiment</h3>
+            <video controls playsinline width="100%">
+              <source src="./static/videos/experiment.mp4" type="video/mp4">
+            </video>
+          </div>
+        </div>
+        <p class="content has-text-justified" style="margin-top: 1rem;">
+          The video demonstrates the interactive navigation capabilities of CoINS in indoor cluttered scenarios across both simulation and real-world experiments, as well as the ability to interact with diverse objects to reconfigure the environment and create free paths.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- <section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">About the Project</h2>
+        <div class="content has-text-justified">
+          <p>
+            CoINS (Counterfactual Interactive Navigation via Skill-Aware VLM) explores how
+            vision-language models can reason about robot skills and counterfactual scenarios to
+            guide interactive navigation. Project details, demos, and paper links will be posted
+            here soon.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section> -->
+
+<!-- <footer class="footer">
+  <div class="container">
+    <div class="content has-text-centered">
+      <p>CoINS project page. Template adapted from Nerfies.</p>
+    </div>
+  </div>
+</footer> -->
+
+</body>
+</html>
