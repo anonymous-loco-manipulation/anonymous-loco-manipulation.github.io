@@ -1,0 +1,64 @@
+\section{INTRODUCTION}
+% Robots that operate in human environments often need to \emph{reposition} objects that are bulky, heavy, or awkward to grasp. Examples include sliding a chair into place, nudging a cart, aligning a bin, or clearing a pathway. For legged robots and quadrupedal mobile manipulators, \emph{non-prehensile pushing} is  attractive: it avoids dexterous grasping, uses the robot’s stability and body geometry, and scales to large objects that might not have handles or grasp points. Yet learning reliable pushing routines or policies remains challenging for two main reasons: 1) intermittent contact force from robots  resulting in uncertain object motion, 2) the variations that needs to be modelled for every object geometry and its various physical properties. The geometry determines where contact can be made and whether the object will slide, pivot, or catch on edges upon the application of force. Finally, learned policies must \emph{generalize} across different object shapes and physical properties, and be \emph{robust} to variation in initial conditions and interactions, %noise, 
+% rather than working only for a hand-tuned setup.
+
+Robots operating in human environments often need to reposition objects that are bulky, heavy, or awkward to grasp, such as sliding a chair into place, nudging a cart, aligning a bin, or clearing a pathway. For legged robots and quadrupedal mobile manipulators, \emph{non-prehensile pushing} is particularly attractive: it sidesteps dexterous grasping, leverages the robot's whole-body stability and geometry, and scales naturally to large objects without handles or convenient grasp points \cite{stuber2020let}. 
+
+Yet learning reliable pushing policies remains challenging for two reasons. First, contact between robot and object is intermittent and spatially variable, making the resulting object motion difficult to predict or control precisely. Second, every object brings its own geometry and physical properties whose shape dictates where contact can be made and whether the object will slide, pivot, or catch on an edge, while mass and friction determine how it responds to applied force. An ideal non-prehensile manipulation policy must therefore \emph{generalize} across diverse object shapes and properties, and remain \emph{robust} to variations in initial conditions and contact interactions, rather than succeeding only in narrowly tuned scenarios. A key but often overlooked factor in achieving this generalization is the choice of \emph{contact modality}: how and where the robot makes contact with the object.
+
+This paper is motivated by a simple question: \emph{What is the right contact modality for generalizable non-prehensile pushing with legged mobile manipulators?} Whole-body pushing can generate large forces and leverage the base for stability, but it is sensitive to contact placement and object geometry. Arm-mediated pushing can localize contact and provide finer control of interaction, but it introduces additional coordination complexity. Recent work has begun to address whole-body loco-manipulation on legged platforms, using hierarchical formulations to infer task-relevant state without explicit object models \cite{Jeon2023WholeBodyQuadruped}, Reinforcement Learning (RL) with explicit safety/contact constraints to improve robustness under complex contacts \cite{dadiotis2025dynamic}, and scalable sim-to-real pipelines for quadrupedal mobile manipulators \cite{liu2024visual}. Yet a direct comparison of whole-body versus arm mediated  pushing under a unified task and training setup remains missing. We address this gap by comparing whole-body and arm-mediated pushing under the same task conditions and metrics, focusing on goal-reaching performance, generalization across object families, and robustness to intermittent contact dynamics.
+
+
+
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=1\linewidth]{Images/teasor-Page-8.drawio (2).pdf}
+    \caption{The figure illustrates non-prehensile manipulation across object families using two contact modalities for a legged mobile manipulator. The left top panel shows arm-mediated pushing, which regulates object motion through controllable arm contact, while the right panel shows whole-body pushing, which uses the robot base to drive the object. Bottom examples shows diverse object families pushed to a target pose (green).}
+    \label{fig:placeholder}
+\end{figure}
+
+
+
+% \begin{figure}[t]
+%     \centering
+%     \includegraphics[width=1\linewidth]{Images/teasor-Page-8.drawio (2).pdf}
+%     \caption{Two pushing strategies for legged mobile manipulators, whole-body vs. arm-mediated pushing. %\noindent\textit{Supplementary materials are available at} \href{https://anonymous-loco-manipulation.github.io}{anonymous-loco-manipulation.github.io}
+%     % \kar{Lets make sure all figures show the robot touching the objects and not have gap between robot and the object. Have a text on top of the green models - "Goal pose". Add captions (Timesnewroman font) Top row left: "Arm-mediating pushing". Top right: "Whole-body pushing". Bottom row: Can we keep all of them to be AM pushing. Let us remove the cube in the top right and show someother interesting object. Let us remove the cylinder in the bottom right and show someother object. Add caption to the bottom row: "Arm-mediated pushing for different object families"}
+%     }
+%     \label{fig:placeholder}
+% \end{figure}
+
+
+
+We build on a Hierarchical RL structure in which a pretrained loco-manipulation controller provides stable motion and compliance \cite{Kumar2021RMA}, while a higher-level policy outputs goal-conditioned pushing commands. Within this framework, we introduce a sampling-based \emph{reach} signal as a key contribution: interaction targets are drawn directly from object geometry, guiding the robot toward purposeful, feasible contacts before meaningful object motion occurs. We pair this with a curriculum that supports early exploration and gradually shifts emphasis to the sparse goal objective, enabling the policy to scale across object families without hand-designed heuristics or task-specific contact assumptions.
+
+To study contact modality under a controlled setting, we consider two quadrupedal robots in simulation: the same robot with and without an arm. This allows us to evaluate \emph{whole-body} pushing as a strong baseline and extend the same task and training %recipe 
+to \emph{arm-mediated} pushing, isolating the effect of contact modality. We evaluate both policies across object families, including rigid boxes and chairs, with large procedural variations to test generalization and robustness, and transfer the learned arm-mediated policy to a real robot as a feasibility demonstration. %\kar{TBD}
+
+
+This paper makes the following contributions:
+\begin{itemize}[leftmargin=*]
+\item We propose a point-cloud-based sampling pipeline for \emph{reach} signal with a geometry-driven contact curriculum that guides the robot toward feasible interactions before %meaningful object motion occurs, 
+moving objects,
+enabling goal-conditioned pushing policies to scale across object families without hand-designed contact heuristics.
+
+\item We adopt a hierarchical RL loco-manipulation setup for goal-conditioned arm-mediated pushing in which a high-level RL policy outputs  base velocity commands and arm joint targets, while a stabilizing low-level controller tracks the commands to maintain stable whole-body motion.
+
+\item We present a systematic study of contact modalities for non-prehensile pushing with legged mobile manipulators, comparing whole-body and arm-mediated strategies under a unified task, 
+% training recipe, %Maria-  can we drop "training recipe"?
+and evaluation protocol across representative object families, including rigid boxes and chairs.
+% \item We demonstrate sim-to-real transfer of the learned arm-mediated pushing policy on a physical Spot robot, validating the practical relevance of the approach.
+\end{itemize}
+
+\IGNORE{
+% Maria -- moved the figure later
+\begin{figure*}
+  \centering
+  \includegraphics[width=1.0\textwidth]{Images/System.pdf}
+  \caption{\textbf{Hierarchical pushing pipeline.} A high-level policy outputs %task 
+  actions for the base and arm. During training, a privileged encoder produces a latent embedding \(z\) that regularizes and supervises a history-based encoder used at test time. The high-level policy generates base velocity commands and arm joint targets; base commands are executed through a pretrained low-level locomotion controller (conditioned on proprioception), while arm commands are applied directly. Both whole-body and arm-mediated pushing are trained/evaluated in the same %simulation 
+  environments with identical goals and object sampling.}
+  \label{fig:system}
+\end{figure*}
+}

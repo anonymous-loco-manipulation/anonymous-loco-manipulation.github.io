@@ -1,0 +1,220 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%2345678901234567890123456789012345678901234567890123456789012345678901234567890
+%        1         2         3         4         5         6         7         8
+
+\documentclass[letterpaper, 10 pt, conference]{ieeeconf}  % Comment this line out if you need a4paper
+
+%\documentclass[a4paper, 10pt, conference]{ieeeconf}      % Use this line for a4 paper
+
+\IEEEoverridecommandlockouts                              % This command is only needed if 
+                                                          % you want to use the \thanks command
+
+\overrideIEEEmargins                                      % Needed to meet printer requirements.
+
+%In case you encounter the following error:
+%Error 1010 The PDF file may be corrupt (unable to open PDF file) OR
+%Error 1000 An error occurred while parsing a contents stream. Unable to analyze the PDF file.
+%This is a known problem with pdfLaTeX conversion filter. The file cannot be opened with acrobat reader
+%Please use one of the alternatives below to circumvent this error by uncommenting one or the other
+%\pdfobjcompresslevel=0
+%\pdfminorversion=4
+
+% See the \addtolength command later in the file to balance the column lengths
+% on the last page of the document
+
+% The following packages can be found on http:\\www.ctan.org
+\usepackage{graphics} % for pdf, bitmapped graphics files
+\usepackage{epsfig} % for postscript graphics files
+% \usepackage{mathptmx} % assumes new font selection scheme installed
+\usepackage{times} % assumes new font selection scheme installed
+\usepackage{amsmath} % assumes amsmath package installed
+\usepackage{amssymb}  % assumes amsmath package installed
+\usepackage{booktabs} 
+\usepackage{tabularx}
+\usepackage{makecell}   % optional but helps line breaks
+\usepackage{footnote}
+\makesavenoteenv{table}
+% \usepackage{float}      % enables [H]
+\usepackage{stfloats}   % helps full-width floats place correctly in 2-col
+\usepackage{threeparttable}
+\usepackage{graphicx}
+ \usepackage{multirow} 
+ \let\labelindent\relax
+ \usepackage{enumitem}
+% \usepackage{booktabs,}
+\usepackage[hidelinks]{hyperref}
+\usepackage{capt-of}
+\usepackage{placeins} % in preamble
+% \usepackage{calrsfs}
+\newcommand{\IGNORE}[1]{}
+
+\title{\LARGE \bf
+Learn2Push: Learning Non-Prehensile Manipulation Across Object Families with Legged Mobile Manipulators}
+
+
+%Learn2Push: Learning Non-Prehensile Manipulation Across Object Families with Legged Mobile Manipulators
+
+\author{Anonymous}
+
+% \author{Ebasa Temesgen$^{1}$, Minghao Zou$^{1}$, Xun Tu$^{1}$, Maria Gini$^{1}$ , Karthik Desingh$^{1}$         %<-this % stops a space
+% \thanks{$^{1}$Department of Computer Science and Engineering, University of Minnesota, Minneapolis, MN, USA.
+% {\tt\small temes021@umn.edu, zou00189@umn.edu tu000080@umn.edu, gini@umn.edu, kdesingh@umn.edu}}%
+% }
+
+
+
+% ---- colored author comments ----
+\usepackage[dvipsnames]{xcolor}
+
+\newif\ifshowcomments
+\showcommentstrue        % <-- show comments
+% \showcommentsfalse     % <-- hide comments (final)
+
+\newcommand{\cmt}[3]{\ifshowcomments\textcolor{#1}{[\textbf{#2:} #3]}\fi}
+
+\newcommand{\Ebasa}[1]{\cmt{RoyalBlue}{Ebasa}{#1}}
+\newcommand{\Minghao}[1]{\cmt{ForestGreen}{Minghao}{#1}}
+\newcommand{\Xun}[1]{\cmt{BurntOrange}{Xun}{#1}}
+\newcommand{\Maria}[1]{\cmt{Magenta}{Maria}{#1}}
+\newcommand{\kar}[1]{\cmt{Purple}{KD}{#1}}
+
+
+
+% ---- math helpers (for appendix tables) ----
+\newcommand{\clip}{\mathrm{clip}}
+\newcommand{\wrap}{\mathrm{wrap}}
+\newcommand{\norm}[1]{\left\lVert #1 \right\rVert}
+\newcommand{\ReLU}{\operatorname{ReLU}}
+\newcommand{\sigmoid}{\sigma}
+\newcommand{\projxy}[1]{\Pi_{xy}\!\left(#1\right)}
+
+
+
+
+
+\pdfobjcompresslevel=0
+\pdfcompresslevel=0
+
+% \IEEEaftertitletext{%
+% \begin{center}
+%   \includegraphics[width=\textwidth]{Images/teasor.drawio.png}
+%   \captionof{figure}{{\textbf{Non-prehensile whole-body pushing with Spot.}
+% We compare arm-only (AM) and coordinated whole-body (WB) control for goal-conditioned object transport.
+% WB exploits base–arm coupling to improve success, stability, and pose accuracy across various geometry and friction variation. }
+% \label{fig:teaser}}
+%   \label{fig:teaser}
+% \end{center}
+% % \vspace{-1.0em} % optional: tighten spacing before abstract
+% }
+
+\begin{document}
+
+\maketitle
+
+
+
+
+\thispagestyle{empty}
+\pagestyle{empty}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{abstract}
+
+Non-prehensile manipulation enables robots to reposition objects through contact, allowing manipulation across diverse object geometries and physical properties without relying on grasping. We study goal-directed object pushing with a quadrupedal robot manipulator and propose a hierarchical reinforcement learning (RL) framework that decouples task-level decision-making from low-level dynamic stabilization. The high-level policy outputs a target base velocity and arm joint targets. A pretrained low-level locomotion policy tracks the base velocity target to produce dynamically stable locomotion, while a separate arm controller tracks the commanded joint targets. To guide exploration toward feasible robot-object interactions, we introduce contact sampling based on the object point cloud to shape a reward for reaching the target for complicated geometry. We compare whole-body (WB) and arm-mediated (AM) pushing under a shared task setup and success metrics, and report a system-level evaluation of performance and robustness across object families and distribution shifts. Our experiments show that AM improves success in most settings and is particularly robust under physics shifts. We further demonstrate that the AM policy generalizes to unseen object geometries.
+
+% We show a case to  the approach through sim-to-real transfer on a physical Spot robot, demonstrating its for real-world deployment.
+% Finally, we systematically compare whole-body base pushing and arm-mediated pushing across representative families of objects and analyze generalization under randomization of geometry and physics. Our experiments show that the arm-mediated pushing achieves a better success rate than whole-body pushing physical and geometrical variation over whole-body pushing. 
+
+
+
+
+% we introduce a sampling that uses a point cloud of an object to provide a reward signal to help reach the object with a geometry-driven contact curriculum, removing the need for hand-designed contact heuristics. 
+
+% Some thoughts for the abstract: However, previous work only handles extrusions such as cuboids and cylinders ... We introduce a point cloud-based sampling pipeline..., extending beyond simple geometries ...  
+
+
+% Non-prehensile manipulation with mobile manipulators is attractive for real-world deployment because it avoids the fragility of grasping, but it is challenging due to contact %-rich 
+% dynamics and %the need to coordinate locomotion and arm motion under safety constraints. 
+% coordination of locomotion and arm motion.
+% We study goal-directed object pushing with a quadrupedal robot manipulator (Spot from Boston Dynamics with an arm) 
+% and present a hierarchical reinforcement learning framework that separates task-level decision making from low-level dynamic stabilization. A high-level policy outputs a single compact whole-body command with an 
+% % Maria -- what is a SE(2)?
+% SE(2) base-velocity target, body attitude targets (roll, pitch, height), and arm joint targets, while a pretrained loco-manipulation controller tracks these commands to produce stable full-body motion. To ensure that reinforcement learning retains control authority, % at the intended decision locus, 
+
+
+
+% we introduce a %deterministic 
+% command-ownership interface that removes intermediate command resampling commonly used in simulation for exploration, enabling synchronized locomotion--arm control from one action vector. We further employ keypoint-based pose objectives for robust goal alignment and surface-based reach-target sampling to encourage diverse contact interactions during training. We evaluate the approach in IsaacLab/IsaacSim simulation environments,% with Spot robot from Boston Dynamics as the mobile manipulator, 
+% and show that the proposed hierarchy and command interface improve learning stability and task success while satisfying safety constraints. Ablation studies isolate the effects of constrained learning, hierarchical structure, and target sampling on performance. 
+% \noindent\textit{Anonymous supplementary:} \href{https://anonymous-loco-manipulation.github.io}{anonymous-loco-manipulation.github.io}
+
+\vspace{0.8em}
+\end{abstract}
+
+
+\input{01_introduction}
+\input{02_related_work}
+\input{03_methodology}
+\input{04_experimental_setup}
+\input{05_results}
+
+\section{Conclusions \& Future Works}
+\label{sec:conclusion}
+
+
+
+We proposed a hierarchical reinforcement learning framework for non-prehensile goal pushing with a quadrupedal mobile manipulator. To enable reliable interaction with geometrically complex objects, we introduced a novel point-cloud-based contact sampling strategy that facilitates interaction with object families. Our evaluations demonstrate that arm-mediated (AM) improves success in most settings, generalizing to unseen object geometries. Ablation studies confirm that our reward shaping, point-cloud-based sampling strategy, and adaptive latent encoder design are essential for this transferability. 
+ 
+As an initial step toward real-world transfer, we conduct a real-twin feasibility study on Spot by replicating the simulation task setup in the physical environment. We record the policy’s high-level commands in simulation (SE(2) base velocities and arm targets) and replay them on hardware in a matched setting while tracking the commands, demonstrating that the task structure transfers to the robot. Next, we will move beyond command replay to \emph{closed-loop} deployment, running the policy online onboard.
+
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.9\linewidth]{Images/Pushing_Chair-Page-2.drawio-1.pdf}
+    \caption{Spot pushing a chair to the goal pose after policy deployment in a real-world setting}
+    \label{fig:placeholder}
+\end{figure}
+
+% \addtolength{\textheight}{-12cm}   % This command serves to balance the column lengths
+                                  % on the last page of the document manually. It shortens
+                                  % the textheight of the last page by a suitable amount.
+                                  % This command does not take effect until the next page
+                                  % so it should come on the page before the last. Make
+                                  % sure that you do not shorten the textheight too much.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% \textit{Supplementary materials are available at} \href{https://anonymous-loco-manipulation.github.io}{anonymous-loco-manipulation.github.io}
+
+
+\bibliographystyle{IEEEtran}
+\bibliography{refs}
+
+% % \clearpage
+% \appendices
+% \input{appendix}
+
+
+
+% \section*{ACKNOWLEDGMENT}
+
+% The preferred spelling of the word ÒacknowledgmentÓ in America is without an ÒeÓ after the ÒgÓ. Avoid the stilted expression, ÒOne of us (R. B. G.) thanks . . .Ó  Instead, try ÒR. B. G. thanksÓ. Put sponsor acknowledgments in the unnumbered footnote on the first page.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% References are important to the reader; therefore, each citation must be complete and correct. If at all possible, references should be commonly available publications.
+
+
+
+
+
+
+
+
+\end{document}

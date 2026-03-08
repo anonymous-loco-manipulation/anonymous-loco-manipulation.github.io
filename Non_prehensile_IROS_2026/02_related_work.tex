@@ -1,0 +1,26 @@
+\section{RELATED WORK}
+\label{sec:related_work}
+
+A growing body of work studies contact-rich manipulation on legged platforms, showing that pushing and other non-prehensile behaviors can be achieved by coordinating base motion, limb contacts, and compliant interaction. Hierarchical formulations that integrate interaction history or learned latent representations have demonstrated accurate object repositioning and reorientation under complex contacts, without requiring precise object models \cite{Jeon2023WholeBodyQuadruped}. In parallel, visual and whole-body control pipelines on quadrupedal mobile manipulators further broaden the range of feasible contact modalities and task settings \cite{liu2024visual, sq-grasp}.
+
+Because pushing involves discontinuous dynamics and frictional uncertainty, many approaches incorporate additional structure beyond reward maximization. Recent methods combine reinforcement learning with explicit constraint handling and differentiable optimization layers to improve stability and transfer in contact-rich mobile manipulation \cite{dadiotis2025dynamic}. Other work studies sampling-based Model Predictive Control (MPC) and introduces learning-guided sampling and generative priors to improve planning performance in complex dynamical settings \cite{brudermuller2026generative}.
+
+Generalizing pushing beyond a single object requires policies that can handle shifts in geometry, mass, friction, and contact conditions. Recent legged-manipulation work addresses object and scene diversity by combining object-conditioned representations with whole-body control to improve robustness across object families \cite{li2025robotmoverlearninglargeobjects}. The corresponding RL formulation focuses on \emph{post-grasp} planar object-velocity control, with the manipulator initialized at a designated grasp point at the start of each episode. While effective for long-horizon rearrangement, this setup sidesteps key challenges in \emph{non-prehensile} pushing, where the robot must learn both contact acquisition and where-to-interact decisions without assuming a provided pre-grasp configuration.
+
+% These directions motivate evaluation protocols that report consistent success across broad variation (pose/orientation tolerances, stability, and contact outcomes), rather than emphasizing single-instance performance.
+
+High-performing contact behaviors increasingly rely on strong locomotion and loco-manipulation priors learned in massively parallel simulation, which provide stable foundations for higher-level decision making and reduce the burden on task-level learning \cite{2025relic,Rudin2021WalkMinutes,Kumar2021RMA}. GPU-accelerated simulators and learning stacks support the scale needed 
+for such priors and for broad-domain randomization \cite{Makoviychuk2021IsaacGym,Baginski2025IsaacLab}. %Lightweight, 
+%Robotics-oriented 
+% RL libraries for robots %further 
+% support rapid iteration on these pipelines while maintaining high training throughput \cite{schwarke2025rsl}.
+
+In contrast to prior efforts that (i) emphasize specialized latent inference, constraint/optimization layers, or planner-in-the-loop %designs 
+\cite{Jeon2023WholeBodyQuadruped,dadiotis2025dynamic}, or (ii) pursue object diversity primarily within hybrid rearrangements, where learning is scoped to post-grasp object control and planning handles collision-free approach and sequencing \cite{li2025robotmoverlearninglargeobjects}, we target a complementary gap: a \emph{simple} reward-trained baseline for \emph{non-prehensile pushing} that \emph{directly} applies to arm-mediated pushing with object variation. 
+
+% This framing 
+% isolates modality trade-offs in stability and contact safety, while keeping the training recipe accessible and extensible. % for follow-on work.
+
+% In contrast to prior efforts that (i) emphasize specialized latent inference, constraint/optimization layers, or planner-in-the-loop designs \cite{Jeon2023WholeBodyQuadruped,Dadiotis2025DoG}, or (ii) focus primarily on scaling object diversity without a unified comparison of interaction modalities \cite{Bi2026ALORE}, we target a complementary gap: a \emph{simple, reproducible} reward-trained baseline that \emph{directly} compares whole-body and arm-mediated pushing under the same environment, success metrics, and large-scale object variation. This framing isolates the trade-offs between contact modality, stability, and contact safety, while keeping the training recipe accessible and extensible for follow-on work.
+
+

@@ -1,0 +1,369 @@
+
+
+% =================================
+% Experiments + Results 
+% =================================
+\section{Experiments}
+\label{sec:exp_results}
+
+
+We conducted experiments in a simulation environment, IsaacLab \cite{Baginski2025IsaacLab}, to compare %whole-body (WB) and arm-mediated (AM) 
+WB and AM
+pushing on the same goal-conditioned object pushing task. We evaluate performance on in-distribution (ID) settings and generalization under out-of-distribution (OOD) shifts in object geometry and physical properites. %This section 
+% We define the task (Sec.~\ref{sec:mdp}), experimental setup (Sec.~\ref{subsec:exp_setup}), test suites (Sec.~\ref{subsec:task_protocol}), and evaluation metrics (Sec.~\ref{subsec:eval_metrics}).
+
+% =========================
+% Task and MDP
+% =========================
+\subsection{Task \& Success Metric}
+\label{sec:mdp}
+The evaluation environment is implemented in IsaacLab~\cite{Baginski2025IsaacLab} as an $8\mathrm{m} \times 8\mathrm{m}$ planar arena. At the beginning of each episode, the robot's pose, the target object's pose, and the goal region's pose are randomly initialized within the arena. The objective is to reposition the object to the goal while maintaining its stability (no toppling) and respecting contact constraints. Episodes terminate on timeout or failure events such as object toppling or collisions with the ground.
+% We formulate an MDP with %simulator 
+% state $s_t$, observation $o_t$, action $a_t$, reward $r_t$, and termination conditions.
+
+\paragraph{Success and evaluation criteria.}
+Let $p_o(t)\in\mathbb{R}^2$ and $\psi_o(t)$ denote the object planar position and yaw at time $t$, and let $(p_g,\psi_g)$ denote the goal pose. Yaw error is the smallest absolute difference between the object yaw and the goal yaw, wrapped to $[0,\pi]$. An episode is successful if, starting at some time $t$, the object remains within translation tolerance $\epsilon_{xy}$ and yaw tolerance $\epsilon_\psi$ for four consecutive high-level steps, while the objectis stationary. We evaluate success under two tolerance settings: \textit{Criterion~1 (C1)} uses $(\epsilon_{xy},\epsilon_\psi)=(15$\,cm$,15^\circ)$ and \textit{Criterion~2 (C2)} uses $(10$\,cm$,10^\circ)$. We also record terminal errors $e_{\text{pos}}=\|p_o(T)-p_g\|_2$ and $e_{\psi}(T)$ (see Table \ref{tab:per_family_main_results}).
+
+
+
+
+\paragraph{Stability and contact constraints.}
+We monitor object stability using an uprightness score based on the alignment between the object’s local axis and world gravity.
+Let $\hat z_o(t)$ be the unit vector of the object’s local $z$-axis expressed in the world frame, and let $\hat z_w=[0,0,1]^\top$ denote the world up direction.
+We define $\cos\theta(t) \triangleq \hat z_o(t)^\top \hat z_w$ and terminate an episode as a \emph{topple} if $\cos\theta(t) < \cos 20^{\circ}$.
+
+% We also constrain robot-object contacts to the intended contact set for each modality.
+% For \textbf{AM}, permitted contacts are restricted to designated end-effector/arm links; contacts on other robot bodies are treated as non-permitted and may be penalized or terminated if impulses exceed a threshold.
+% For \textbf{WB}, we analogously specify an intended body-contact region and discourage hazardous contacts outside this region.
+% We report contact and stability outcomes in Sec.~\ref{sec:results}.
+
+% ================================
+
+
+% =========================
+% TABLE: setup summary 
+% =========================
+\begin{table}[t]
+\centering
+\caption{\textbf{Evaluation setup summary.}}
+\label{tab:setup_summary}
+\scriptsize
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.}
+\begin{tabular}{@{}p{2.9cm}cc@{}}
+\toprule
+ & \textbf{WB} & \textbf{AM} \\
+\midrule
+Robot & Spot  & Spot + arm \\
+High-level action dim. & 3 & 9 \\
+% Policy obs dim. & 25 & 72 \\
+Episode horizon (s) & 30 & 30 \\
+% Object families & [box,cyl,chair] & [box,cyl,chair] \\
+Permitted contacts & base/body links & arm/EE links \\
+Parallel envs & \multicolumn{2}{c}{4096} \\
+Training iterations & \multicolumn{2}{c}{20000} \\
+\bottomrule
+\end{tabular}
+\vspace{-0.75em}
+\end{table}
+
+% ============================================================
+\subsection{In-Distribution (ID) \& Out-of-Distribution (OOD) Test}
+\label{subsec:task_protocol}
+At episode initialization, object attributes are randomly sampled. We define \textit{in-distribution} (ID) as sampling geometric and physical parameters from the same ranges used during training. We define \textit{out-of-distribution} (OOD) as deliberately shifting these ranges to evaluate generalization under distribution mismatch. We randomize objects' physical properties during training and out-of-range physics shifts at test time as a standard stress test for generalization \cite{Peng2018DynamicsRandomization}. We consider two OOD suites:
+\begin{enumerate}
+    \item \textit{OOD-Geometry (OOD-G):} unseen shapes and aspect ratios (e.g., elongated/flattened cuboids, tall/slender objects, non-convex variants).
+    \item \textit{OOD-Physics (OOD-P):} variations in friction, mass, center of mass, or inertia beyond the training randomization ranges.
+\end{enumerate}
+
+The train-time randomization ranges and OOD shifts for the object categories in Table~\ref{tab:object_sets} 
+are summarized in Table~\ref{tab:domain_rand}.
+
+% =========================
+% TABLE II: Object sets used in evaluation
+% =========================
+\begin{table}[t]
+\caption{\textbf{Object sets used in evaluation.}}
+\label{tab:object_sets}
+\renewcommand{\arraystretch}{1.05}
+\setlength{\tabcolsep}{4pt}
+\small
+\begin{tabular}{@{}p{2.75cm}p{1.35cm}p{0.75cm}p{3.1cm}@{}}
+\toprule
+\textbf{Objects} & \textbf{Type} & \textbf{\#} & \textbf{Suites} \\
+\midrule
+Cuboid, Cylinder & parametric & 500 & ID, OOD-G, OOD-P \\
+Chairs & rigid mesh & 7 & Unseen objects \\
+Non-chair objects & rigid mesh & 5 & Unseen objects \\
+\bottomrule
+\end{tabular}
+\vspace{-0.6em}
+\end{table}
+
+% =========================
+% TABLE I: Domain randomization summary
+% =========================
+\begin{table}[t]
+\centering
+\caption{\textit{Domain randomization}}
+\label{tab:domain_rand}
+\renewcommand{\arraystretch}{1.05}
+\setlength{\tabcolsep}{4pt}
+\small
+\begin{tabular}{@{}p{4.05cm}p{2.05cm}p{2.05cm}@{}}
+\toprule
+\textbf{Factor} & \textbf{Train}  & \textbf{OOD} \\
+\midrule
+Object mass $m$ (kg) & $[2.0,8.0]$  & $[2.0,18.0]$ \\
+Static friction $\mu$ & $[0.6,1.2]$  & $[0.1,0.6]$ \\
+Dynamic friction $\mu_d$ & $[0.48, 0.96]$ & $[0.08, 0.48]$ \\
+CoM offset $\|\Delta c\|$ (m) & $\le 0.05$ & $\le 0.20$ \\
+\midrule
+Object Height $h$ & $[0.4,1.0]$  & $[0.4,1.8]$ \\
+Object width $w$ (m) & $[0.25, 0.75]$ & $[0.25, 1.25]$ \\
+Object length $d$ (m) & $[0.25, 0.75]$ & $[0.25, 1.25]$ \\
+\midrule
+Spawn region $(x,y)$ (m) & $x,y \in [-4,4]$ & same \\
+Init yaw $\psi$ (rad) & $[-\pi,\pi]$ & same \\
+\midrule
+Goal distance $\|p_g-p_o\|$ (m) & $[1.5,2.5]$  & $[0.8,3.5]$ \\
+Robot--obj dist $\|p_o-p_b\|$ (m) & $[2.0,3.2]$  & same \\
+Episode time limit $T_{\max}$ (s) & 30 & 30 \\
+\midrule
+Terrain & plane & same \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ============================================================
+% \subsection{Evaluation Metrics}
+% \label{subsec:eval_metrics}
+% We report goal-reaching success under two criteria defined by pose tolerances between the final object pose $(x,y,\theta)$ and the goal pose: \textit{Criterion~1} requires $e_{\text{pos}}<15$\,cm and $e_{\psi}<15^\circ$, while the stricter \textit{Criterion~2} requires $e_{\text{pos}}<10$\,cm and $e_{\psi}<10^\circ$. We also report terminal errors $e_{\text{pos}}$ and $e_{\psi}$.
+
+
+
+
+
+
+
+
+% % =================================
+% % Experiments + Results 
+% % =================================
+% \section{Experiments}
+% \label{sec:exp_results}
+
+
+
+% We conduct controlled simulation experiments in IsaacLab \cite{Baginski2025IsaacLab} to compare whole-body (WB) and arm-mediated (AM) pushing on the same goal-conditioned task. We evaluate performance on in-distribution (ID) settings and generalization under out-of-distribution (OOD) shifts in geometry and physics. This section defines the task/MDP (Sec.~\ref{sec:mdp}), experimental setup (Sec.~\ref{subsec:exp_setup}), test suites (Sec.~\ref{subsec:task_protocol}), and evaluation metrics (Sec.~\ref{subsec:eval_metrics}).
+
+
+% % \kar{Our experiments are designed to test the capabilities of the learned policy by answering the following four questions:
+% % (1) \textbf{Performance:} How accurately can the robot push the object to achieve the goal pose?
+% % (2) \textbf{Generalization:} does performance hold across large distributions of object geometry and physical properties?
+% % (3) \textbf{Robustness:} how sensitive is performance to initializations?
+% % (4) \textbf{Behavior:} how does the model perform for two different contact modes of manipulation i.e. \textit{whole-body} vs. \textit{arm-mediated}?
+% % }
+
+% % \kar{In this section we will define the experimental setup, task, training and testing distributions, along with the evaluation protocol and metrics. 
+% % }
+
+% % \kar{Subsections following this could be: A) Non-prehensile Manipulation Task and Contact Modes (unless this comes in the problem statement); B) Task Success Metrics; C) Evaluation Protocol for Testing Generalization; D) Evaluation Protocol for Testing Robustness.}
+% % =========================
+% % Task and MDP
+% % =========================
+% \subsection{Task and MDP}
+% \label{sec:mdp}
+% Each episode samples (i) an initial robot pose, (ii) a pushable object pose, and (iii) a goal region on the ground plane.
+% The objective is to reposition the object to the goal while maintaining object stability (no toppling) and avoiding unsafe robot--object contacts.
+% We formulate an MDP with simulator state $s_t$, observation $o_t$, action $a_t$, reward $r_t$, and termination conditions.
+% \paragraph{Success metric (pose + settling).}
+% Let $p_o(t)\in\mathbb{R}^2$ and $\psi_o(t)$ denote the object planar position and yaw at time $t$, and let $p_g\in\mathbb{R}^2$ and $\psi_g$ denote the goal pose.
+% We declare success when the object is within translation tolerance $\epsilon_{xy}$ and yaw tolerance $\epsilon_{\psi}$ for a dwell window of $K$ consecutive high-level steps,
+% while both the object and robot are near-stationary.
+
+% We compute the wrapped yaw error as
+% \begin{equation}
+% \label{eq:yaw_error}
+% e_{\psi}(t)\triangleq \left|\operatorname{atan2}\!\Big(\sin(\psi_o(t)-\psi_g),\,\cos(\psi_o(t)-\psi_g)\Big)\right|.
+% \end{equation}
+% The per-step success indicator is
+% \begin{equation}
+% \label{eq:succ_step}
+% \mathbf{1}_{\text{succ}}(t)=
+% \mathbf{1}\!\Big[
+% \big(\|p_o(t)-p_g\|_2<\epsilon_{xy}\big)\ \wedge\ \big(e_{\psi}(t)<\epsilon_{\psi}\big)
+% \Big],
+% \end{equation}
+% and during the dwell window we additionally require $\|v_o(t)\|_2<\epsilon_v$ and $\|v_r(t)\|_2<\epsilon_r$,
+% where $v_o(t)$ and $v_r(t)$ are the object and robot base linear velocities.
+% We declare episode success if $\sum_{i=t-K+1}^{t}\mathbf{1}_{\text{succ}}(i)=K$.
+
+
+% \paragraph{Stability and safety.}
+% We monitor object stability using an uprightness score based on the alignment between the object’s local ``up'' axis and world gravity.
+% Let $\hat z_o(t)$ be the unit vector of the object’s local $z$-axis expressed in the world frame, and let $\hat z_w=[0,0,1]^\top$ denote the world up direction.
+% We define
+% \[
+% \cos\theta(t) \triangleq \hat z_o(t)^\top \hat z_w,
+% \]
+% and terminate an episode as a \emph{topple} if $\cos\theta(t) < \cos\theta_{\min}$ (equivalently, if the tilt angle exceeds a fixed threshold).
+
+% Safety is enforced by monitoring robot--object contacts. For \textbf{AM}, we define an \emph{allowed} contact set consisting of the designated end-effector links
+% and treat contacts on all other robot bodies (e.g., base, legs, sensors) as \emph{non-permitted}. Non-permitted contacts are penalized and may trigger termination
+% if their impulse/force exceeds a threshold. For \textbf{WB}, we analogously specify an intended body-contact region and discourage hazardous contacts outside this region.
+% We report contact and safety outcomes (e.g., non-permitted impulses, illegal contacts, topples, emergency stops) in Sec.~\ref{sec:results}.
+
+% % ================================
+% \subsection{Experimental Setup}
+% \label{subsec:exp_setup}
+
+% Consistent with the training procedure, the benchmarking environment is implemented in IsaacLab \cite{Baginski2025IsaacLab}. At the beginning of each episode, the robot, the target object, and the goal pose are initialized with random poses within an $8\mathrm{m} \times 8\mathrm{m}$ planar arena. The ground plane is assigned a friction coefficient $\mu$, sampled independently to introduce variability in contact dynamics (see (TODO: a figure on the arena)). The set of object categories evaluated in our experiments is summarized in Table~\ref{tab:object_sets}.
+
+% The task objective is to control the robot to push the initialized object to the specified goal pose, either using its base or manipulator, while maintaining dynamic stability and satisfying predefined contact-safety constraints. An episode is considered unsuccessful and terminated if any constraint is violated, including object toppling or joint torque saturation. 
+
+% % =========================
+% % TABLE: setup summary 
+% % =========================
+% \begin{table}[t]
+% \centering
+% \caption{\textbf{Evaluation setup summary.}}
+% \label{tab:setup_summary}
+% \small
+% \setlength{\tabcolsep}{4pt}
+% \renewcommand{\arraystretch}{1.05}
+% \begin{tabular}{@{}p{2.9cm}cc@{}}
+% \toprule
+%  & \textbf{WB} & \textbf{AM} \\
+% \midrule
+% Robot & [Spot, ANYmal-C]  & [Spot + arm] \\
+% High-level action dim. & [3] & [12] \\
+% Policy obs dim. & [25] & [72] \\
+% Episode horizon (s) & [30] & [30] \\
+% Object families & [box,cyl,chair] & [box,cyl,chair] \\
+% Permitted contacts & base/body links & arm/EE links \\
+% Parallel envs & \multicolumn{2}{c}{[4096]} \\
+% % Rollouts per suite ($N$) & \multicolumn{2}{c}{[1000]} \\
+% % Seeds ($S$) & \multicolumn{2}{c}{[3]} \\
+% \bottomrule
+% \end{tabular}
+% \vspace{-0.75em}
+% \end{table}
+
+% % ============================================================
+% \subsection{In-Distribution (ID) \& Out-of-Distribution (OOD) Test Suites}
+% \label{subsec:task_protocol}
+
+
+% % \paragraph{Task}
+% % NOTE: Ebasa's original scripts
+% % Each episode samples an object instance and a planar goal pose. The objective is to move the object from its initial pose to the goal pose while maintaining stability and respecting contact-safety constraints. Episodes terminate on timeout, object failure (e.g., topple), or robot/safety violations.
+
+
+% % At the time of spawning, the attributes of the objects are all randomly initialized. By comparing with the training dataset, the spawned objects can be classified into two types: \textit{in-distribution (ID)} or \textit{Out-of-Distribution (OOD)}. Here, \textit{in-distribution (ID)} refers to the objects with a random initialization distribution that matches the training distribution, while \textit{out-of-distribution (OOD)} are the ones with a random initialization distribution that deliberately shifts the training distribution to diagnose generalization.
+% % \textit{OOD} objects are initialized under conditions that lie outside the training distribution, e.g., novel object geometry or physics parameters beyond the training randomization ranges.
+% % We isolate geometry shifts, physics shifts, and difficult initializations: 
+% % \begin{enumerate}
+% %     \item \textit{ID:} object families and parameter ranges seen during training.
+% %     \item \textit{OOD-Geometry (OOD-G):} novel shapes and aspect ratios (e.g., long/flat cuboids, tall/slender objects, non-convex variants).
+% %     \item \textit{OOD-Physics (OOD-P):} friction/mass/CoM/inertia variations outside the training range.
+% %     \item \textit{Stress:} harder initializations (tight clearances, random yaw, near-boundary goals, cluttered starts).
+% % \end{enumerate}
+
+% % For the object listed in (Table~\ref{tab:object_sets}) and used for our experiments, we detail our ID/OOD test suites in Table~\ref{tab:domain_rand }, according to whether geometry/physics parameters fall inside or outside the train-time randomization ranges 
+
+% At episode initialization, all object attributes are randomly sampled. Relative to the training distribution, the instantiated objects are categorized as either in-distribution (ID) or out-of-distribution (OOD). The ID setting corresponds to objects whose geometric and physical parameters are drawn from the same randomization ranges employed during training. In contrast, OOD instances are generated by systematically shifting the sampling distribution to evaluate the policy’s generalization under distributional mismatch.
+
+% Specifically, OOD objects are initialized with properties that lie outside the support of the training-time domain randomization, such as previously unseen geometries or physical parameters that exceed the nominal training bounds. To disentangle the sources of distributional shift, we separately examine geometric variations and physical parameter variations:
+% \begin{enumerate}
+%     \item \textit{ID: } Object families and parameter ranges observed during training.
+%     \item \textit{OOD-Geometry (OOD-G): }Novel shapes and aspect ratios (e.g., elongated or flattened cuboids, tall and slender objects, and non-convex variants).
+%     \item \textit{OOD-Physics (OOD-P):} Variations in friction, mass, center of mass, or inertia that fall outside the training randomization ranges.
+% \end{enumerate}
+
+
+% % =========================
+% % TABLE II: Object taxonomy + evaluation sets
+% % =========================
+% \begin{table}[t]
+% \caption{\textbf{Object taxonomy and evaluation sets.} }
+% \label{tab:object_sets}
+% \renewcommand{\arraystretch}{1.05}
+% \setlength{\tabcolsep}{4pt}
+% \small
+% \begin{tabular}{@{}p{0.6cm}p{2.4cm}p{1.35cm}p{0.5cm}p{2.8cm}@{}}
+% \toprule
+% \textbf{Cat.} & \textbf{Family} & \textbf{Type} & \textbf{\#} & \textbf{Suites} \\
+% \midrule
+% \multirow{2}{*}{C1} & Cuboid & parametric & 500 & ID, OOD-G, OOD-P \\
+%                     & Cylinder & parametric & 500 & ID, OOD-G, OOD-P \\
+% \midrule
+% \multirow{2}{*}{C2} & Chair & rigid mesh & 9 & ID, OOD-G, Stress \\
+%                     & Stool / table & rigid mesh & - & OOD-G, Stress \\
+% \midrule
+% \multirow{2}{*}{C3} & Chair-with-casters & articulated & - & OOD-Art, Stress \\
+%                     & Cart / dolly & articulated & - & OOD-Art, Stress \\
+% \bottomrule
+% \end{tabular}
+% \vspace{-0.6em}
+% \end{table}
+
+
+
+% % % % ============================================================
+% % % \paragraph{Domain Randomization}
+% % % When initializing our evaluation scenario, we randomize the domain according to the statistics in \ref{tab:domain_rand}. Notably, "Train" means the statistics are adopted in the training process, while "OOD" (Out-of-Distribution) refers to the statistics unseen in the original training process.To make ID/OOD definitions explicit, we report train-time randomization ranges and the expanded OOD ranges as seen in Table \ref{tab:domain_rand}. 
+
+% % =========================
+% % TABLE I: Domain randomization summary
+% % =========================
+% \begin{table}[t]
+% \centering
+% \caption{\textit{Domain randomization}}
+% \label{tab:domain_rand}
+% \renewcommand{\arraystretch}{1.05}
+% \setlength{\tabcolsep}{4pt}
+% \small
+% \begin{tabular}{@{}p{4.05cm}p{2.05cm}p{2.05cm}@{}}
+% \toprule
+% \textbf{Factor} & \textbf{Train}  & \textbf{OOD} \\
+% \midrule
+% Object mass $m$ (kg) & $[2.0,8.0]$  & $[2,18]$ \\
+% Static friction $\mu$ & $[0.6,1.2]$  & $[0.1,0.6]$ \\
+% Dynamic friction $\mu_d$ & $[0.48, 0.96]$ & $[0.08, 0.48]$ \\
+% CoM offset $\|\Delta c\|$ (m) & $\le 0.05$ & $\le 0.20$ \\
+% % Inertia tilt (deg) & $[-15,15]$ & $[-25,25]$ \\
+% % Drag / damping & $[0.05,1.0]$  & $[0.0,1.5]$ \\
+% \midrule
+% Object Height $h$ & $[0.4,1.0]$  & $[0.4,1.8]$ \\
+% Object width $w$ (m) & $[0.25, 0.75]$ & $[0.25, 1.25]$ \\
+% Object length $d$ (m) & $[0.25, 0.75]$ & $[0.25, 1.25]$ \\
+% % Aspect ratios & bounded  & expanded \\
+% % Init yaw & $[-\pi,\pi]$  & same \\
+% \midrule
+% Spawn region $(x,y)$ (m) & $x,y \in [-4,4]$ & same \\
+% Init yaw $\psi$ (rad) & $[-\pi,\pi]$ & same \\
+% \midrule
+% Goal distance $\|p_g-p_o\|$ (m) & $[1.5,2.5]$  & $[0.8,3.5]$ \\
+% Robot--obj dist $\|p_o-p_b\|$ (m) & $[2.0,3.2]$  & same \\
+% Episode time limit $T_{\max}$ (s) & 30 & 30 \\
+% % Tight clearances & no  & yes \\
+% \midrule
+% % External pushes & on/off  & stronger \\
+% % Sensor noise & on/off  & stronger \\
+% Terrain & plane & plane/rough \\
+% \bottomrule
+% \end{tabular}
+% % \vspace{-0.6em}
+% \end{table}
+
+% For the object categories listed in Table~\ref{tab:object_sets} and evaluated in our experiments, the corresponding ID and OOD test suites are summarized in Table~\ref{tab:domain_rand}, organized according to whether the geometric and physical parameters fall within or beyond the training-time randomization ranges.
+
+
+
+% \subsection{Evaluation Metrics}
+% \label{subsec:eval_metrics}
+
+% % \paragraph{Metrics}
+% We evaluate goal-reaching under two success criteria defined by pose tolerances between the final object pose $(x,y,\theta)$ and the goal pose: \textit{Criterion~1 (C1)} requires $e_{\text{pos}}<15$\,cm and $e_{\psi}<15^\circ$, while the stricter \textit{Criterion~2 (C2)} requires $e_{\text{pos}}<10$\,cm and $e_{\psi}<10^\circ$.
+
