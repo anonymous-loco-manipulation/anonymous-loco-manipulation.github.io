@@ -65,7 +65,7 @@
       <div class="image-grid">
         <figure>
           <img src="./systemdiagram-Page-4.drawio.png" alt="System diagram">
-          <figcaption>System diagram.</figcaption>
+          <figcaption><strong>Hierarchical pushing pipeline.</strong> A high-level policy outputs actions for the base and arm. During training, a privileged encoder produces a latent embedding <em>z</em> that regularizes and supervises a history-based encoder used at test time. The high-level policy generates base velocity commands and arm joint targets; base commands are executed through a pretrained low-level locomotion controller conditioned on proprioception, while arm commands are applied directly. Both whole-body and arm-mediated pushing are trained and evaluated in the same environments with identical goals and object sampling.</figcaption>
         </figure>
       </div>
     </section>
@@ -105,6 +105,7 @@
           </tbody>
         </table>
       </div>
+      <p class="note">Criterion 1 (C1) uses translation and yaw tolerances of 15 cm and 15°, respectively. Criterion 2 (C2) uses stricter tolerances of 10 cm and 10°.</p>
       <p class="note">AM is also more efficient on successful episodes: 10.40s vs 20.58s average completion time, and 5.05m vs 14.99m average base path length.</p>
     </section>
 
@@ -165,6 +166,28 @@
         <article><h3>Box/Cylinder • Group • WB</h3><video controls playsinline preload="metadata"><source src="./static/media/videos/modality/box_cylider-wb.mp4" type="video/mp4"></video></article>
         <article><h3>AM Rollout</h3><video controls playsinline preload="metadata"><source src="./static/media/videos/efficiency/am_rollout.mp4" type="video/mp4"></video></article>
       </div>
+    </section>
+
+    <section class="panel">
+      <h2>Real-World Deployment</h2>
+      <p>
+        As an initial step toward real-world transfer, we conduct a real-twin feasibility study on Spot by replicating the simulation task setup in the physical environment. We record the policy's high-level commands in simulation, including SE(2) base velocities and arm targets, and replay them on hardware in a matched setting while tracking the commands. This demonstrates that the task structure transfers to the robot and motivates future closed-loop onboard deployment.
+      </p>
+      <div class="video-grid two-up">
+        <article>
+          <h3>Spot Deployment • Trial 1</h3>
+          <video controls playsinline preload="metadata">
+            <source src="./static/media/videos/real-world-test/IMG_8496.mp4" type="video/mp4">
+          </video>
+        </article>
+        <article>
+          <h3>Spot Deployment • Trial 2</h3>
+          <video controls playsinline preload="metadata">
+            <source src="./static/media/videos/real-world-test/IMG_8503.mp4" type="video/mp4">
+          </video>
+        </article>
+      </div>
+      <p class="note"> Spot pushes a chair to the goal pose after policy deployment in a real-world setting.</p>
     </section>
   </main>
 
